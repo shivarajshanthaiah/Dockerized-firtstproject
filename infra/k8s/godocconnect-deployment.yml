@@ -1,41 +1,20 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: godocconnect
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: godocapp
-#   template:
-#     metadata:
-#       labels:
-#         app: godocapp
-#     spec:
-#       containers:
-#       - name: docapp
-#         image:  shivaraj3652/godocapp
-#         ports:
-#         - containerPort: 8080
-
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: godocconnect
+  name: godoc-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: godocapp
+      app: godoc
   template:
     metadata:
       labels:
-        app: godocapp
+        app: godoc
     spec:
       containers:
-        - name: godocapp
-          image: shivaraj3652/godocapp
+        - name: godoc
+          image: shivaraj3652/dockerized-docconnect-godocapp
           env:
             - name: DB_Config
               value: host=postgres-service user=postgres password=shivaraj dbname=docapp port=5432 sslmode=disable
@@ -46,35 +25,18 @@ spec:
             - name: REDIS_PASSWORD
               value: ""
           ports:
-            - containerPort: 8080
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-          lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sleep", "5"]
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
+            - containerPort: 8080          
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: godocapp-service
+  name: godoc-service-nodeport
 spec:
   selector:
-    app: godocapp
+    app: godoc
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-
-
-
+      nodePort: 30080
+  type: NodePort

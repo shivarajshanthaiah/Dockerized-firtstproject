@@ -13,7 +13,7 @@ spec:
         app: redis
     spec:
       containers:
-      - name: redis-container
+      - name: redis
         image: redis:latest
         ports:
         - containerPort: 6379
@@ -21,11 +21,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-container
+  name: redis
 spec:
   selector:
     app: redis
   ports:
     - protocol: TCP
-      port: 6380
+      port: 6379
       targetPort: 6379
